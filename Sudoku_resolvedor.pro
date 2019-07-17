@@ -4,6 +4,8 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
+        Cuadricula.cpp \
         main.cpp
 
-HEADERS +=
+HEADERS += \
+	Cuadricula.h
