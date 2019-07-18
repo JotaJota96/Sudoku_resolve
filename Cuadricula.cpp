@@ -119,7 +119,7 @@ bool Cuadricula::estadoValido(){
             for (int v = 0; v < DIMENSIONES; v++) numerosEncontrados[v] = false;
 
             for (int y = i; y < i+DIMENSIONES_CUADRANTE; y++){
-                for (int x = i; x < j+DIMENSIONES_CUADRANTE; x++){
+                for (int x = j; x < j+DIMENSIONES_CUADRANTE; x++){
                     val = numeros[y][x];
 
                     // si la casilla esta vacia, salta a la siguiente

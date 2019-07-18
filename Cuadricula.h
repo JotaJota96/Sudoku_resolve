@@ -1,5 +1,6 @@
 #ifndef CUADRICULA_H
 #define CUADRICULA_H
+#include <iostream>
 
 /*
  * La cuadricula se representa como un a matriz que almacena los valores de cada casilla
