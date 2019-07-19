@@ -1,10 +1,10 @@
 # Sudoku resolve
 
 ## Carga de datos:
-[![](imgs/img_1.png)
+[![](https://raw.githubusercontent.com/JotaJota96/Sudoku_resolve/master/imgs/img_1.PNG)
 
 ## Proceso de resolución:
-[![](imgs/img_2.png)
+[![](https://raw.githubusercontent.com/JotaJota96/Sudoku_resolve/master/imgs/img_2.PNG)
 
 ## Juego completado:
-[![](imgs/img_3.png)
+[![](https://raw.githubusercontent.com/JotaJota96/Sudoku_resolve/master/imgs/img_3.PNG)
