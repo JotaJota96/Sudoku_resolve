@@ -4,13 +4,30 @@ using namespace std;
 
 #include "Cuadricula.h"
 
-void mostrarTablero(Cuadricula*);
+#define BORDE_VERTICAL				186
+#define BORDE_HORIZONTAL			205
+#define ESQUINA_SUPERIOR_IZQUIERDA	201
+#define ESQUINA_SUPERIOR_DERECHA	187
+#define ESQUINA_INFERIOR_IZQUIERDA	200
+#define ESQUINA_INFERIOR_DERECHA	188
+#define LINEA_VERTICAL				179
+#define LINEA_HORIZONTAL			196
+#define LINEA_INTERSECCION			197
+
+#define COLOR_NORMAL 15
+#define COLOR_TABLERO 11
+#define COLOR_NUMERO 10
+#define COLOR_CONSTANTE 1
+//---------------------------------------------------------------------------------
+
 bool resolver(Cuadricula*, int, int, int);
 void llenarConstantes(Cuadricula*, int);
 void dibujarLineasTablero();
-void dibujarNumeroTablero(int x, int y, int num);
+void dibujarConstantesTablero(Cuadricula* c);
+void dibujarNumeroTablero(int x, int y, int num, int tipoNumero);
 void borrarNumeroTablero(int x, int y);
 void GoToXY(int x, int y);
+void cambiarColor(int val);
 
 int main(){
     Cuadricula* c = new Cuadricula();
@@ -18,12 +35,13 @@ int main(){
     system("CLS");
 
     dibujarLineasTablero();
+    dibujarConstantesTablero(c);
 
-    resolver(c, 9, 1,1);
+    bool resuelto = resolver(c, 9, 1,1);
 
     GoToXY(0,13);
 
-    if (c->estadoValido()){
+    if (resuelto){
         cout << "El sudoku ha sido resuelto" << endl;
     }else{
         cout << "El sudoku NO ha sido resuelto" << endl;
@@ -46,7 +64,6 @@ bool resolver(Cuadricula* c, int dimensiones, int columna, int fila){
 
     // si la casilla actual es constante, simplemente avanza a la siguiente
     if (c->esConstante(columna, fila)){
-        dibujarNumeroTablero(columna, fila, c->get(columna,fila));
         return resolver(c, dimensiones, columna+1, fila);
     }else{ // si no es una constante
         // intenta colocar cada uno de los posibles valores
@@ -55,7 +72,7 @@ bool resolver(Cuadricula* c, int dimensiones, int columna, int fila){
             c->escribirNumero(columna, fila, i);
             // si el candidato deja la cuadricula en un estado valido, se avanza a la siguiente
             if (c->estadoValido()){
-                dibujarNumeroTablero(columna, fila, i);
+                dibujarNumeroTablero(columna, fila, i, COLOR_NUMERO);
                 bool resuelto = resolver(c, dimensiones, columna+1, fila);
                 if (resuelto){
                     return resuelto;
@@ -85,35 +102,9 @@ void llenarConstantes(Cuadricula* c, int dimensiones){
 }
 
 //---------------------------------------------------------------------------------
-void mostrarTablero(Cuadricula* c){
-    printf("+---------------------------+\n");
-    for (int y = 1; y <= 9; y++){
-        printf("|");
-        for (int x = 1; x <= 9; x++){
-            int val = c->get(x,y);
-            if (val == 0){
-                printf("   ");
-            }else{
-                printf(" %d ", val);
-            }
-        }
-        printf("|\n");
-    }
-    printf("+---------------------------+\n");
-}
-
-
-#define BORDE_VERTICAL				186
-#define BORDE_HORIZONTAL			205
-#define ESQUINA_SUPERIOR_IZQUIERDA	201
-#define ESQUINA_SUPERIOR_DERECHA	187
-#define ESQUINA_INFERIOR_IZQUIERDA	200
-#define ESQUINA_INFERIOR_DERECHA	188
-#define LINEA_VERTICAL				179
-#define LINEA_HORIZONTAL			196
-#define LINEA_INTERSECCION			197
-//---------------------------------------------------------------------------------
 void dibujarLineasTablero(){
+    cambiarColor(COLOR_TABLERO);
+
     // dibuja las esquinas
     GoToXY(0,   0);  printf("%c", ESQUINA_SUPERIOR_IZQUIERDA);
     GoToXY(24,  0);  printf("%c", ESQUINA_SUPERIOR_DERECHA);
@@ -141,15 +132,31 @@ void dibujarLineasTablero(){
     GoToXY(16, 4);  printf("%c", LINEA_INTERSECCION);
 
     GoToXY(0,13);
+    cambiarColor(COLOR_NORMAL);
+}
+void dibujarConstantesTablero(Cuadricula* c){
+    cambiarColor(COLOR_CONSTANTE);
+    for (int y = 1; y <= 9; y++){
+        for (int x = 1; x <= 9; x++){
+            int val = c->get(x,y);
+            if (val != 0){
+                dibujarNumeroTablero(x, y, val, COLOR_CONSTANTE);
+            }
+        }
+    }
+    cambiarColor(COLOR_NORMAL);
 }
 
 //---------------------------------------------------------------------------------
-void dibujarNumeroTablero(int x, int y, int num){
+void dibujarNumeroTablero(int x, int y, int num, int tipoNumero){
+    cambiarColor(tipoNumero);
     GoToXY(x*2 + 2*((x-1)/3), y + (y-1)/3);  printf("%d", num);
+    cambiarColor(COLOR_NORMAL);
 }
 void borrarNumeroTablero(int x, int y){
     GoToXY(x*2 + 2*((x-1)/3), y + (y-1)/3);  printf(" ");
 }
+
 //---------------------------------------------------------------------------------
 void GoToXY(int x, int y){		// Coloca el cursor en la ordenada indicada
     HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -158,6 +165,9 @@ void GoToXY(int x, int y){		// Coloca el cursor en la ordenada indicada
     dwPos.Y = static_cast<short>(y);;
     SetConsoleCursorPosition(hCon, dwPos);
 }
-
-
+void cambiarColor(int val){
+    // Necesita #include <windows.h>
+    HANDLE  hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, static_cast<WORD>(val));
+}
 
