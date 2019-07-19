@@ -18,6 +18,7 @@ using namespace std;
 #define COLOR_TABLERO 11
 #define COLOR_NUMERO 10
 #define COLOR_CONSTANTE 1
+#define COLOR_ERROR 4
 //---------------------------------------------------------------------------------
 
 bool resolver(Cuadricula*, int, int, int);
@@ -30,23 +31,31 @@ void GoToXY(int x, int y);
 void cambiarColor(int val);
 
 int main(){
-    Cuadricula* c = new Cuadricula();
-    llenarConstantes(c, 9);
-    system("CLS");
+    Cuadricula* c;
 
-    dibujarLineasTablero();
-    dibujarConstantesTablero(c);
+    while (true){
+        c = new Cuadricula();
+        llenarConstantes(c, 9);
+        system("CLS");
 
-    bool resuelto = resolver(c, 9, 1,1);
+        dibujarLineasTablero();
+        dibujarConstantesTablero(c);
 
-    GoToXY(0,13);
+        bool resuelto = resolver(c, 9, 1,1);
 
-    if (resuelto){
-        cout << "El sudoku ha sido resuelto" << endl;
-    }else{
-        cout << "El sudoku NO ha sido resuelto" << endl;
+        GoToXY(0,13);
+
+        if (resuelto){
+            cambiarColor(COLOR_NUMERO);
+            cout << "El sudoku ha sido resuelto" << endl;
+        }else{
+            cambiarColor(COLOR_ERROR);
+            cout << "El sudoku NO ha sido resuelto" << endl;
+        }
+        cambiarColor(COLOR_NORMAL);
+        system("PAUSE");
+        system("CLS");
     }
-
     return 0;
 }
 
@@ -87,17 +96,48 @@ bool resolver(Cuadricula* c, int dimensiones, int columna, int fila){
 
 //---------------------------------------------------------------------------------
 void llenarConstantes(Cuadricula* c, int dimensiones){
-    for (int i = 0; i < dimensiones; i++){
-        string str = "";
-        cout << "Ingrese la fila " << i+1 << ": ";
+    string str = "";
+    bool cargarLinea = true;
+
+    cambiarColor(COLOR_NORMAL);
+    cout << "Ingrese los numeros que hay en cada una de las 9 filas del tablero." << endl;
+    cout << "Para cada fila ingrese un espacio si la casilla esta vacia, o el numero correspondiente." << endl;
+    cambiarColor(COLOR_CONSTANTE);
+    cout << "(ejemplo:) Ingrese la fila X: 123 5  8 " << endl;
+    cambiarColor(COLOR_NORMAL);
+
+    for (int i = 1; i <= dimensiones; i++){
+        str = "";
+        cargarLinea = true;
+
+        cout << "Ingrese la fila " << i << ": ";
         getline(cin, str);
 
-        for (int j = 0; j < dimensiones; j++){
-            if (str[j] != ' '){
-                c->definirConstante(j+1, i+1, str[j]-48);
+        if (str.length() != 9){
+            cambiarColor(COLOR_ERROR);
+            cout << "La linea ingresada es incorrecta. Se esperaban 9 caracteres." << endl;
+            cambiarColor(COLOR_NORMAL);
+            i--;
+            cargarLinea = false;
+        }else{
+            for (int j = 0; j < dimensiones; j++){
+                if (str[j] != ' ' && (str[j] < 48 || str[j] > 57)){
+                    cambiarColor(COLOR_ERROR);
+                    cout << "La linea ingresada es incorrecta. Solo se esperaban numeros o espacios." << endl;
+                    cambiarColor(COLOR_NORMAL);
+                    i--;
+                    cargarLinea = false;
+                    break;
+                }
             }
         }
-
+        if (cargarLinea){
+            for (int j = 0; j < dimensiones; j++){
+                if (str[j] != ' '){
+                    c->definirConstante(j+1, i, str[j]-48);
+                }
+            }
+        }
     }
 }
 
